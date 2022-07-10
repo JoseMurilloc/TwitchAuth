@@ -3,7 +3,20 @@ import styled from 'styled-components/native';
 import { getBottomSpace, getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { MotiView } from 'moti';
 
-export const Container = styled(MotiView)`
+export const Container = styled(MotiView).attrs({
+  from: {
+    opacity: 0,
+    scale: 0.9,
+  },
+  animate: {
+    opacity: 1,
+    scale: 1,
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.9,
+  }
+})`
   flex: 1;
 `;
 
