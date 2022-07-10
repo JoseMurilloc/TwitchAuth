@@ -1,27 +1,9 @@
 import { makeRedirectUri, revokeAsync, startAsync } from 'expo-auth-session';
-import React, { useEffect, createContext, useContext, useState, ReactNode } from 'react';
+import React, { useEffect, createContext, useContext, useState } from 'react';
 import { generateRandom } from 'expo-auth-session/build/PKCE';
 
 import { api } from '../services/api';
-
-interface User {
-  id: number;
-  display_name: string;
-  email: string;
-  profile_image_url: string;
-}
-
-interface AuthContextData {
-  user: User;
-  isLoggingOut: boolean;
-  isLoggingIn: boolean;
-  signIn: () => Promise<void>;
-  signOut: () => Promise<void>;
-}
-
-interface AuthProviderData {
-  children: ReactNode;
-}
+import { AuthContextData, AuthProviderData, User } from './types/auth';
 
 const AuthContext = createContext({} as AuthContextData);
 
@@ -36,11 +18,13 @@ function AuthProvider({ children }: AuthProviderData) {
   const [user, setUser] = useState({} as User);
   const [userToken, setUserToken] = useState('');
 
-  // get CLIENT_ID from environment variables
+  useEffect(() => {
+    api.defaults.headers.common['Client-Id'] = process.env.CLIENT_ID ?? '';
+  }, [])
 
   async function signIn() {
     try {
-      // set isLoggingIn to true
+      setIsLoggingIn(true)
 
       // REDIRECT_URI - create OAuth redirect URI using makeRedirectUri() with "useProxy" option set to true
       // RESPONSE_TYPE - set to "token"
@@ -88,10 +72,6 @@ function AuthProvider({ children }: AuthProviderData) {
       // set isLoggingOut to false
     }
   }
-
-  useEffect(() => {
-    // add client_id to request's "Client-Id" header
-  }, [])
 
   return (
     <AuthContext.Provider value={{ user, isLoggingOut, isLoggingIn, signIn, signOut }}>
